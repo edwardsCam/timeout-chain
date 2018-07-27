@@ -1,0 +1,19 @@
+{
+  "name": "timeout-chain",
+  "version": "1.0.0",
+  "description": "Use this to create a chain of time-based promises, e.g.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edwardsCam/timeout-chain.git"
+  },
+  "author": "Cameron Edwards",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/edwardsCam/timeout-chain/issues"
+  },
+  "homepage": "https://github.com/edwardsCam/timeout-chain#readme"
+}
