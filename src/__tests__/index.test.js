@@ -1,16 +1,15 @@
-import { assert, createSinonSuite } from '@inst/career-test-utils'
-import Subject from '../index'
+import sinon from 'sinon'
+import timeoutChain from '../index'
 
-describe('career-development-plan::utils::timeoutChain', function() {
-  const sinon = createSinonSuite(this)
+describe('timeout-chain', function() {
   let stubs
 
   beforeEach(function() {
     sinon.useFakeTimers()
     stubs = {
-      first: sinon.stub(),
-      second: sinon.stub(),
-      third: sinon.stub(),
+      first: sinon.fake(),
+      second: sinon.fake(),
+      third: sinon.fake(),
     }
   })
 
@@ -19,7 +18,7 @@ describe('career-development-plan::utils::timeoutChain', function() {
   })
 
   it('immediately resolves if list is empty', function() {
-    const prom = Subject('test')
+    const prom = timeoutChain('test')
     sinon.clock.tick()
     return prom
   })
@@ -27,34 +26,34 @@ describe('career-development-plan::utils::timeoutChain', function() {
   it('calls each step in the chain, in order', function() {
     const chain = [
       done => {
-        assert.notCalled(stubs.first)
-        assert.notCalled(stubs.second)
-        assert.notCalled(stubs.third)
+        sinon.assert.notCalled(stubs.first)
+        sinon.assert.notCalled(stubs.second)
+        sinon.assert.notCalled(stubs.third)
         stubs.first()
         done()
       },
       done => {
-        assert.called(stubs.first)
-        assert.notCalled(stubs.second)
-        assert.notCalled(stubs.third)
+        sinon.assert.called(stubs.first)
+        sinon.assert.notCalled(stubs.second)
+        sinon.assert.notCalled(stubs.third)
         stubs.second()
         done()
       },
       done => {
-        assert.called(stubs.first)
-        assert.called(stubs.second)
-        assert.notCalled(stubs.third)
+        sinon.assert.called(stubs.first)
+        sinon.assert.called(stubs.second)
+        sinon.assert.notCalled(stubs.third)
         stubs.third()
         done()
       },
       done => {
-        assert.called(stubs.first)
-        assert.called(stubs.second)
-        assert.called(stubs.third)
+        sinon.assert.called(stubs.first)
+        sinon.assert.called(stubs.second)
+        sinon.assert.called(stubs.third)
         done()
       },
     ]
-    const prom = Subject('test', 0, chain)
+    const prom = timeoutChain('test', 0, chain)
     sinon.clock.tick(chain.length)
     return prom
   })
@@ -75,31 +74,31 @@ describe('career-development-plan::utils::timeoutChain', function() {
       },
     ]
     const TIME = 100
-    const prom = Subject('test', TIME, chain)
+    const prom = timeoutChain('test', TIME, chain)
 
-    assert.notCalled(stubs.first)
-    assert.notCalled(stubs.second)
-    assert.notCalled(stubs.third)
+    sinon.assert.notCalled(stubs.first)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick(TIME / 2)
-    assert.notCalled(stubs.first)
-    assert.notCalled(stubs.second)
-    assert.notCalled(stubs.third)
+    sinon.assert.notCalled(stubs.first)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick(TIME)
-    assert.called(stubs.first)
-    assert.notCalled(stubs.second)
-    assert.notCalled(stubs.third)
+    sinon.assert.called(stubs.first)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick(TIME)
-    assert.called(stubs.first)
-    assert.called(stubs.second)
-    assert.notCalled(stubs.third)
+    sinon.assert.called(stubs.first)
+    sinon.assert.called(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick(TIME)
-    assert.called(stubs.first)
-    assert.called(stubs.second)
-    assert.called(stubs.third)
+    sinon.assert.called(stubs.first)
+    sinon.assert.called(stubs.second)
+    sinon.assert.called(stubs.third)
 
     sinon.clock.tick(TIME)
 
@@ -121,21 +120,21 @@ describe('career-development-plan::utils::timeoutChain', function() {
         done()
       },
     ]
-    const prom = Subject('test', 0, chain, 1)
+    const prom = timeoutChain('test', 0, chain, 1)
 
-    assert.notCalled(stubs.first)
-    assert.notCalled(stubs.second)
-    assert.notCalled(stubs.third)
+    sinon.assert.notCalled(stubs.first)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick()
-    assert.notCalled(stubs.first)
-    assert.called(stubs.second)
-    assert.notCalled(stubs.third)
+    sinon.assert.notCalled(stubs.first)
+    sinon.assert.called(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick(1)
-    assert.notCalled(stubs.first)
-    assert.called(stubs.second)
-    assert.called(stubs.third)
+    sinon.assert.notCalled(stubs.first)
+    sinon.assert.called(stubs.second)
+    sinon.assert.called(stubs.third)
 
     sinon.clock.tick(1)
 
@@ -158,37 +157,38 @@ describe('career-development-plan::utils::timeoutChain', function() {
       },
     ]
 
-    Subject('test', 100, chain)
+    timeoutChain('test', 100, chain)
 
     sinon.clock.tick(100)
-    assert.equal(1, stubs.first.callCount)
-    assert.notCalled(stubs.second)
-    assert.notCalled(stubs.third)
+    expect(stubs.first.callCount).toBe(1)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
-    const prom = Subject('test', 100, chain)
+    const prom = timeoutChain('test', 100, chain)
 
     sinon.clock.tick()
-    assert.equal(1, stubs.first.callCount)
-    assert.notCalled(stubs.second)
-    assert.notCalled(stubs.third)
+    expect(stubs.first.callCount).toBe(1)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick(100)
-    assert.equal(2, stubs.first.callCount)
-    assert.equal(1, stubs.second.callCount)
-    assert.notCalled(stubs.third)
+    expect(stubs.first.callCount).toBe(2)
+    expect(stubs.second.callCount).toBe(1)
+    sinon.assert.notCalled(stubs.third)
 
     sinon.clock.tick(100)
-    assert.equal(2, stubs.first.callCount)
-    assert.equal(2, stubs.second.callCount)
-    assert.equal(1, stubs.third.callCount)
+    expect(stubs.first.callCount).toBe(2)
+    expect(stubs.second.callCount).toBe(2)
+    expect(stubs.third.callCount).toBe(1)
 
     sinon.clock.tick(100)
-    assert.equal(2, stubs.first.callCount)
-    assert.equal(2, stubs.second.callCount)
-    assert.equal(2, stubs.third.callCount)
+    expect(stubs.first.callCount).toBe(2)
+    expect(stubs.second.callCount).toBe(2)
+    expect(stubs.third.callCount).toBe(2)
 
     sinon.clock.tick(100)
 
     return prom
   })
+
 })

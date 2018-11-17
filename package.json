@@ -4,8 +4,11 @@
   "description": "Use this to create a chain of time-based promises, e.g.",
   "main": "src/index.js",
   "scripts": {
+    "prebuild": "yarn clean",
     "build": "webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rm -rf dist/",
+    "test": "karma start karma.conf.js --single-run",
+    "test:watch": "karma start karma.conf.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +21,11 @@
   },
   "homepage": "https://github.com/edwardsCam/timeout-chain#readme",
   "devDependencies": {
+    "karma": "3.1.1",
+    "karma-chrome-launcher": "2.2.0",
+    "karma-jasmine": "2.0.1",
+    "karma-webpack": "3.0.5",
+    "sinon": "7.1.1",
     "webpack": "4.25.1",
     "webpack-cli": "3.1.2"
   }
