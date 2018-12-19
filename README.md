@@ -1,38 +1,41 @@
 # timeout-chain
 
-Lightweight, dependency-free utility for creating a chain of time-based promises, e.g.
+Lightweight, dependency-free utility for creating a chain of time-based functions.
 
-1. do `x`, wait `1 second`, then
-1. do `y`, wait `1 second`, then
-1. do `z`
+Useful for animation sequences or anything where you want to guarantee some amount of time passing between steps.
 
-Takes a list of functions that take a `done` callback as the only argument.
-Call `done()` on each step in the chain to begin the next timeout and move into the next step.
-This callback allows you to do async things like `setState` or an http request if you like.
+1. do `task a`, wait `1 second`, then
+1. do `task b`, wait `1 second`, then
+1. do `task c`
 
-At any given time, there is only one chain per unique id in execution.
-This means that if you call the same chain (or, rather, call a chain with the same `id`)
-multiple times, even if previous chains have not completed yet, all previous chains will be cancelled,
-and the _newest_ one will continue on as the only chain.
+---
 
-To illustrate this, consider the following:
+## Example (React)
 
 ```javascript
-timeoutChain('test', 100, listOfSteps).then(() => {
-  // This is never reached!
-  // The next chain is called before this one could finish, and it got replaced.
-  console.info('sadface')
-})
-timeoutChain('test', 100, listOfSteps).then(() => {
-  // This does complete!
-  // And it only gets called once, even though we started another chain before this.
-  console.info('this is the chain that finished')
+timeoutChain('showingSteps', 500, [
+  done => {
+    this.setState({ finishedStepOne: true }, done)
+    console.log('starting step one')
+  },
+  done => {
+    this.setState({ finishedStepTwo: true }, done)
+    console.log('500ms later, starting step two')
+  },
+  done => {
+    this.setState({ finishedStepThree: true }, done)
+    console.log('500ms after that, starting step three')
+  },
+]).then(() => {
+  console.log('completed the chain!')
 })
 ```
 
-This makes chains somewhat idempotent, as you can be sure you'll only hit the end of _one_ invocation
-of your chain. (note that steps will still be repeated if, for instance, you allow two steps to happen,
-then start a new chain from the beginning. It will call those first two steps again.)
+---
+
+Takes a list of functions that have a `done` callback as the only argument.
+Call `done()` when you're ready to begin the timeout to start the chain's next step.
+You can chain asynchronous things like `setState` or an http request if you like - you have a guarantee that you'll always have at least `<wait>` ms between steps.
 
 ## Signature
 
@@ -46,27 +49,28 @@ then start a new chain from the beginning. It will call those first two steps ag
            next step.
 * `step`: The index in the chain to begin execution at.
 
-## Example usage
+At any given time, there is only one chain in execution per unique id.
+This means that if you make multiple calls to timeoutChain with the same `id`,
+only the most recent chain will execute, and any previous chains with that id will be cancelled.
+This makes chains somewhat idempotent, as you can be sure you'll only hit the end of _one_ invocation
+of your chain. (note that steps will still be repeated if, for instance, you allow two steps to happen,
+then start a new chain from the beginning. It will call those first two steps again.)
+
+To illustrate this, consider the following:
 
 ```javascript
-const animationFuncs = [
-  done => this.setState({ showStepOne: true }, done),
-  done => this.setState({ showStepTwo: true }, done),
-  done => {
-    doSomethingElseSync()
-    done()
-  },
-]
+function funcThatNeverExecutes() {
+  // This is never reached!
+  // The next chain is called before this one could finish, and it got replaced.
+  console.info('sadface')
+}
 
-// every 500ms, call the next function in the chain
-timeoutChain('showingSteps', 500, animationFuncs).then(() => {
-  console.info('completed the chain!')
-})
+function funcThatExecutes() {
+  // This does complete!
+  // And it only gets called once, even though we started another chain before this.
+  console.info('this is the chain that finished')
+}
 
-...
-
-// skip the first step, instead start at index 1
-timeoutChain('showingSteps', 500, animationFuncs, 1).then(() => {
-  console.info('completed the tail of the chain!')
-})
+timeoutChain('test', 100, listOfSteps).then(funcThatNeverExecutes)
+timeoutChain('test', 100, listOfSteps).then(funcThatExecutes)
 ```
