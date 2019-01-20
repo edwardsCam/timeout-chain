@@ -15,16 +15,16 @@ Useful for animation sequences or anything where you want to guarantee some amou
 ```javascript
 timeoutChain('showingSteps', 500, [
   done => {
-    this.setState({ finishedStepOne: true }, done)
     console.log('starting step one')
+    this.setState({ finishedStepOne: true }, done)
   },
   done => {
-    this.setState({ finishedStepTwo: true }, done)
     console.log('500ms later, starting step two')
+    this.setState({ finishedStepTwo: true }, done)
   },
   done => {
-    this.setState({ finishedStepThree: true }, done)
     console.log('500ms after that, starting step three')
+    this.setState({ finishedStepThree: true }, done)
   },
 ]).then(() => {
   console.log('completed the chain!')
