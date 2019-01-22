@@ -1,6 +1,6 @@
 # timeout-chain
 
-Lightweight, dependency-free utility for creating a chain of time-based functions.
+Lightweight, dependency-free utility for creating a chain of time-based callbacks.
 
 Useful for animation sequences or anything where you want to guarantee some amount of time passing between steps.
 

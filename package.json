@@ -1,8 +1,14 @@
 {
   "name": "timeout-chain",
   "version": "1.0.0",
-  "description": "Use this to create a chain of time-based promises, e.g.",
-  "main": "src/index.js",
+  "description": "Create a chain of callbacks, executed in order, with a fixed timeout between them.",
+  "keywords": [
+    "timeout",
+    "time",
+    "wait",
+    "chain"
+  ],
+  "main": "dist/main.js",
   "scripts": {
     "prebuild": "yarn clean",
     "build": "webpack",
@@ -14,7 +20,7 @@
     "type": "git",
     "url": "git+https://github.com/edwardsCam/timeout-chain.git"
   },
-  "author": "Cameron Edwards",
+  "author": "Cameron Edwards <edwards.cameron.pc@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/edwardsCam/timeout-chain/issues"
