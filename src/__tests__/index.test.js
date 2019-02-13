@@ -142,6 +142,8 @@ describe('timeout-chain', function() {
   })
 
   it('clears previous chains if you call the same id multiple times', function() {
+    const TIME = 50
+
     const chain = [
       done => {
         stubs.first()
@@ -157,38 +159,75 @@ describe('timeout-chain', function() {
       },
     ]
 
-    timeoutChain('test', 100, chain)
+    timeoutChain('test', TIME, chain)
 
-    sinon.clock.tick(100)
+    sinon.clock.tick(TIME)
     expect(stubs.first.callCount).toBe(1)
     sinon.assert.notCalled(stubs.second)
     sinon.assert.notCalled(stubs.third)
 
-    const prom = timeoutChain('test', 100, chain)
+    const prom = timeoutChain('test', TIME, chain)
 
-    sinon.clock.tick()
-    expect(stubs.first.callCount).toBe(1)
+    sinon.clock.tick(TIME)
+    expect(stubs.first.callCount).toBe(2)
     sinon.assert.notCalled(stubs.second)
     sinon.assert.notCalled(stubs.third)
 
-    sinon.clock.tick(100)
+    sinon.clock.tick(TIME)
     expect(stubs.first.callCount).toBe(2)
     expect(stubs.second.callCount).toBe(1)
     sinon.assert.notCalled(stubs.third)
 
-    sinon.clock.tick(100)
+    sinon.clock.tick(TIME)
     expect(stubs.first.callCount).toBe(2)
-    expect(stubs.second.callCount).toBe(2)
+    expect(stubs.second.callCount).toBe(1)
     expect(stubs.third.callCount).toBe(1)
 
-    sinon.clock.tick(100)
-    expect(stubs.first.callCount).toBe(2)
-    expect(stubs.second.callCount).toBe(2)
-    expect(stubs.third.callCount).toBe(2)
-
-    sinon.clock.tick(100)
+    sinon.clock.tick(TIME)
 
     return prom
   })
 
+  it('lets you cancel the chain', function() {
+    const chain = [
+      done => {
+        stubs.first()
+        done()
+      },
+      done => {
+        stubs.second()
+        done()
+      },
+      done => {
+        stubs.third()
+        done()
+      },
+    ]
+
+    const prom = timeoutChain('test', 50, chain)
+
+    sinon.clock.tick(50)
+    expect(stubs.first.callCount).toBe(1)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
+
+    timeoutChain.cancel('test')
+
+    sinon.clock.tick(50)
+    expect(stubs.first.callCount).toBe(1)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
+
+    sinon.clock.tick(50)
+    expect(stubs.first.callCount).toBe(1)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
+
+    sinon.clock.tick(50)
+    expect(stubs.first.callCount).toBe(1)
+    sinon.assert.notCalled(stubs.second)
+    sinon.assert.notCalled(stubs.third)
+
+    return prom
+  })
 })

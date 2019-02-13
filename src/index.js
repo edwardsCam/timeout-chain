@@ -1,13 +1,13 @@
 const timeouts = {}
+const MARKED_FOR_DEATH = 'MarkedForDeath'
 
-export default function timeoutChain(id, wait = 0, chain = [], step = 0) {
-  if (!timeouts[id]) timeouts[id] = {}
-  clearTimeout(timeouts[id][step])
+function timeoutChain(id, wait = 0, chain = [], step = 0) {
+  clearTimeout(timeouts[id])
 
   return new Promise(resolve => {
-    timeouts[id][step] = setTimeout(() => {
-      if (step >= chain.length) {
-        timeouts[id] = {}
+    timeouts[id] = setTimeout(() => {
+      if (step >= chain.length || timeouts[id] === MARKED_FOR_DEATH) {
+        delete timeouts[id]
         resolve()
       } else {
         const nextCallback = () => timeoutChain(id, wait, chain, step + 1).then(resolve)
@@ -16,3 +16,9 @@ export default function timeoutChain(id, wait = 0, chain = [], step = 0) {
     }, wait)
   })
 }
+
+timeoutChain.cancel = function cancel(id) {
+  timeouts[id] = MARKED_FOR_DEATH
+}
+
+export default timeoutChain

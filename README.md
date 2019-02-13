@@ -74,3 +74,12 @@ function funcThatExecutes() {
 timeoutChain('test', 100, listOfSteps).then(funcThatNeverExecutes)
 timeoutChain('test', 100, listOfSteps).then(funcThatExecutes)
 ```
+
+timeoutChain also has a `cancel` method, which you can use to cancel the invocation of the chain.
+The `timeoutChain()` promise will immediately resolve after calling cancel.
+If you are using timeoutChain with React, it is recommended that you always cancel the timeoutChain
+in `componentWillUnmount`.
+
+```javascript
+timeoutChain.cancel('theDoomedChain')
+```

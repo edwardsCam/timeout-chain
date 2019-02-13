@@ -1,6 +1,6 @@
 {
   "name": "timeout-chain",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Create a chain of callbacks, executed in order, with a fixed timeout between them.",
   "keywords": [
     "timeout",
@@ -10,6 +10,7 @@
   ],
   "main": "dist/main.js",
   "scripts": {
+    "prepublish": "yarn build",
     "prebuild": "yarn clean",
     "build": "webpack",
     "clean": "rm -rf dist/",
