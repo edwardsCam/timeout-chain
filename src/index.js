@@ -18,7 +18,9 @@ function timeoutChain(id, wait = 0, chain = [], step = 0) {
 }
 
 timeoutChain.cancel = function cancel(id) {
-  timeouts[id] = MARKED_FOR_DEATH
+  if (timeouts[id] != null) {
+    timeouts[id] = MARKED_FOR_DEATH
+  }
 }
 
 export default timeoutChain
