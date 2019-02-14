@@ -18,7 +18,7 @@ describe('timeout-chain', function() {
   })
 
   it('immediately resolves if list is empty', function() {
-    const prom = timeoutChain('test')
+    const prom = timeoutChain.begin('test')
     sinon.clock.tick()
     return prom
   })
@@ -53,7 +53,7 @@ describe('timeout-chain', function() {
         done()
       },
     ]
-    const prom = timeoutChain('test', 0, chain)
+    const prom = timeoutChain.begin('test', 0, chain)
     sinon.clock.tick(chain.length)
     return prom
   })
@@ -74,7 +74,7 @@ describe('timeout-chain', function() {
       },
     ]
     const TIME = 100
-    const prom = timeoutChain('test', TIME, chain)
+    const prom = timeoutChain.begin('test', TIME, chain)
 
     sinon.assert.notCalled(stubs.first)
     sinon.assert.notCalled(stubs.second)
@@ -120,7 +120,7 @@ describe('timeout-chain', function() {
         done()
       },
     ]
-    const prom = timeoutChain('test', 0, chain, 1)
+    const prom = timeoutChain.begin('test', 0, chain, 1)
 
     sinon.assert.notCalled(stubs.first)
     sinon.assert.notCalled(stubs.second)
@@ -159,14 +159,14 @@ describe('timeout-chain', function() {
       },
     ]
 
-    timeoutChain('test', TIME, chain)
+    timeoutChain.begin('test', TIME, chain)
 
     sinon.clock.tick(TIME)
     expect(stubs.first.callCount).toBe(1)
     sinon.assert.notCalled(stubs.second)
     sinon.assert.notCalled(stubs.third)
 
-    const prom = timeoutChain('test', TIME, chain)
+    const prom = timeoutChain.begin('test', TIME, chain)
 
     sinon.clock.tick(TIME)
     expect(stubs.first.callCount).toBe(2)
@@ -204,7 +204,7 @@ describe('timeout-chain', function() {
       },
     ]
 
-    const prom = timeoutChain('test', 50, chain)
+    const prom = timeoutChain.begin('test', 50, chain)
 
     sinon.clock.tick(50)
     expect(stubs.first.callCount).toBe(1)

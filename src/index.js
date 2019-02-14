@@ -12,17 +12,21 @@ function timeoutChain(id, wait = 0, chain = [], step = 0) {
         delete timeouts[id]
         resolve()
       } else {
-        const nextCallback = () => timeoutChain(id, wait, chain, step + 1).then(resolve, reject)
-        chain[step](nextCallback)
+        chain[step](() => (
+          timeoutChain(id, wait, chain, step + 1).then(resolve, reject)
+        ))
       }
     }, wait)
   })
 }
 
-timeoutChain.cancel = function cancel(id) {
+function cancel(id) {
   if (timeouts[id] != null) {
     timeouts[id] = MARKED_FOR_DEATH
   }
 }
 
-export default timeoutChain
+export default {
+  begin: timeoutChain,
+  cancel,
+}

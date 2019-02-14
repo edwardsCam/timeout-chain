@@ -13,7 +13,7 @@ Useful for animation sequences or anything where you want to guarantee some amou
 ## Example (React)
 
 ```javascript
-timeoutChain('showingSteps', 500, [
+timeoutChain.begin('showingSteps', 500, [
   done => {
     console.log('starting step one')
     this.setState({ finishedStepOne: true }, done)
@@ -39,7 +39,9 @@ You can chain asynchronous things like `setState` or an http request if you like
 
 ## Signature
 
-`timeoutChain(id, wait = 0, chain = [], step = 0)`
+### `begin()`
+
+`timeoutChain.begin(id, wait = 0, chain = [], step = 0)`
 
 * `id`: A unique identifier for this chain. This is needed to ensure that only one invocation of a chain
         is happening at any given time.
@@ -71,12 +73,14 @@ function funcThatExecutes() {
   console.info('this is the chain that finished')
 }
 
-timeoutChain('test', 100, listOfSteps).then(funcThatNeverExecutes)
-timeoutChain('test', 100, listOfSteps).then(funcThatExecutes)
+timeoutChain.begin('test', 100, listOfSteps).then(funcThatNeverExecutes)
+timeoutChain.begin('test', 100, listOfSteps).then(funcThatExecutes)
 ```
 
-timeoutChain also has a `cancel` method, which you can use to cancel the invocation of the chain.
-The `timeoutChain()` promise will immediately resolve after calling cancel.
+### `cancel()`
+
+Use this to cancel the invocation of the chain.
+The `timeoutChain()` promise will immediately reject after calling cancel.
 If you are using timeoutChain with React, it is recommended that you always cancel the timeoutChain
 in `componentWillUnmount`.
 
