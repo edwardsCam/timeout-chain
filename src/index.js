@@ -7,14 +7,23 @@ function timeoutChain(id, wait = 0, chain = [], step = 0) {
   return new Promise((resolve, reject) => {
     timeouts[id] = setTimeout(() => {
       if (timeouts[id] === MARKED_FOR_DEATH) {
-        reject(`[${id}] Chain was cancelled!`)
+        // Did not complete, but nothing went wrong. We just cancelled the chain.
+
+        resolve(false)
       } else if (step >= chain.length) {
+        // Completed successfully
+
         delete timeouts[id]
-        resolve()
+        resolve(true)
       } else {
-        chain[step](() => (
-          timeoutChain(id, wait, chain, step + 1).then(resolve, reject)
-        ))
+        try {
+          const nextCallback = () => timeoutChain(id, wait, chain, step + 1).then(resolve, reject)
+          chain[step](nextCallback)
+        } catch (e) {
+          // Something unexpected happened. The promise should reject here.
+
+          reject(e)
+        }
       }
     }, wait)
   })

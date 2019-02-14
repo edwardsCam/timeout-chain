@@ -1,6 +1,6 @@
 {
   "name": "timeout-chain",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Create a chain of callbacks, executed in order, with a fixed timeout between them.",
   "keywords": [
     "timeout",
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/edwardsCam/timeout-chain#readme",
   "devDependencies": {
+    "chai": "4.2.0",
     "karma": "3.1.1",
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "2.0.1",

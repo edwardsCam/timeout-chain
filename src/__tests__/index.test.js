@@ -1,4 +1,5 @@
 import sinon from 'sinon'
+import { assert } from 'chai'
 import timeoutChain from '../index'
 
 describe('timeout-chain', function() {
@@ -188,7 +189,7 @@ describe('timeout-chain', function() {
     return prom
   })
 
-  it('lets you cancel the chain, but rejects the promise', function() {
+  it('lets you cancel the chain', function() {
     const chain = [
       done => {
         stubs.first()
@@ -228,8 +229,34 @@ describe('timeout-chain', function() {
     sinon.assert.notCalled(stubs.second)
     sinon.assert.notCalled(stubs.third)
 
-    return prom.then(
-      (m) => sinon.assert.fail('should not have resolved'),
-      (e) => sinon.assert.pass())
+    return prom
+  })
+
+  it('resolves with true if the chain is completed', function() {
+    const prom = timeoutChain.begin('test')
+    sinon.clock.tick()
+    return prom.then(didComplete => {
+      assert.isTrue(didComplete)
+    })
+  })
+
+  it('resolves with false if the chain is cancelled', function() {
+    const prom = timeoutChain.begin('test')
+    timeoutChain.cancel('test')
+    sinon.clock.tick()
+    return prom.then(didComplete => {
+      assert.isFalse(didComplete)
+    })
+  })
+
+  it('rejects if anything breaks during the chain', function() {
+    const whatIsYourMajorMalfunction = new Error('ruh-roh')
+    const prom = timeoutChain.begin('test', 0, [
+      () => { throw whatIsYourMajorMalfunction }
+    ])
+    sinon.clock.tick()
+    return prom.catch(err => {
+      assert.equal(err, whatIsYourMajorMalfunction)
+    })
   })
 })
