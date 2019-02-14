@@ -188,7 +188,7 @@ describe('timeout-chain', function() {
     return prom
   })
 
-  it('lets you cancel the chain', function() {
+  it('lets you cancel the chain, but rejects the promise', function() {
     const chain = [
       done => {
         stubs.first()
@@ -228,6 +228,8 @@ describe('timeout-chain', function() {
     sinon.assert.notCalled(stubs.second)
     sinon.assert.notCalled(stubs.third)
 
-    return prom
+    return prom.then(
+      (m) => sinon.assert.fail('should not have resolved'),
+      (e) => sinon.assert.pass())
   })
 })
