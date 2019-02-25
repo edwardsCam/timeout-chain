@@ -28,6 +28,9 @@
   },
   "homepage": "https://github.com/edwardsCam/timeout-chain#readme",
   "devDependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1",
+    "babel-loader": "^8.0.5",
     "chai": "4.2.0",
     "karma": "3.1.1",
     "karma-chrome-launcher": "2.2.0",
